@@ -27,9 +27,14 @@ public class MowerController {
     @Autowired
     private final MowerService mowerService;
 
-    public MowerController(MowerService mowerService, StringToMowerCommandMapper stringToMowerCommandMapper) {
+    @Autowired
+    private final LocationMapper locationMapper;
+
+    public MowerController(MowerService mowerService, StringToMowerCommandMapper stringToMowerCommandMapper,
+                           LocationMapper locationMapper) {
         this.mowerService = mowerService;
         this.stringToMowerCommandMapper = stringToMowerCommandMapper;
+        this.locationMapper = locationMapper;
     }
 
     @GetMapping("/ping")
@@ -38,20 +43,21 @@ public class MowerController {
     }
 
     @PostMapping("/commands")
-    public List<Location> evaluateCommands(@Valid @RequestBody MowerRequest mowerRequest) {
+    public List<LocationDto> evaluateCommands(@Valid @RequestBody MowerRequest mowerRequest) {
         Plateau plateau = mowerRequest.getPlateau();
         List<Location> locations = new ArrayList<>();
         try {
             for (MowerData mowerData : mowerRequest.getMowerDataList()) {
                 List<MowerCommandType> commands = stringToMowerCommandMapper.map(mowerData.getCommands());
-                Location location = mowerService.evaluateCommands(plateau, mowerData.getLocation(), commands);
+                Location location = mowerService.evaluateCommands(plateau,
+                        locationMapper.dtoToDomain(mowerData.getLocation()), commands);
                 locations.add(location);
             }
         } catch (MowerCommandException exc) {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR, exc.getMessage(), exc);
         }
-        return locations;
+        return locationMapper.domainToDto(locations);
     }
 
 }

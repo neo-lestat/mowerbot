@@ -3,7 +3,6 @@ package com.seat.mowerbot.infrastructure.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seat.mowerbot.domain.Cardinal;
-import com.seat.mowerbot.domain.Location;
 import com.seat.mowerbot.domain.Plateau;
 import com.seat.mowerbot.infrastructure.rest.request.MowerData;
 import com.seat.mowerbot.infrastructure.rest.request.MowerRequest;
@@ -58,7 +57,7 @@ public class MowerControllerIntegrationTest {
 
     private String buildMowerRequest(){
         Plateau plateau = new Plateau(5,5);
-        Location initLocation = new Location(1,2, Cardinal.NORTH);
+        LocationDto initLocation = new LocationDto(1,2, Cardinal.NORTH.getShortLetter());
         String movements = "LMLMLMLMM";
         MowerData mowerData = new MowerData();
         mowerData.setLocation(initLocation);

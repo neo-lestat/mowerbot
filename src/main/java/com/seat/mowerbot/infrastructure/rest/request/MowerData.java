@@ -1,21 +1,21 @@
 package com.seat.mowerbot.infrastructure.rest.request;
 
-import com.seat.mowerbot.domain.Location;
+import com.seat.mowerbot.infrastructure.rest.LocationDto;
 
 import javax.validation.constraints.NotNull;
 
 public class MowerData {
 
     @NotNull
-    private Location location;
+    private LocationDto location;
     @NotNull
     private String commands;
 
-    public Location getLocation() {
+    public LocationDto getLocation() {
         return location;
     }
 
-    public void setLocation(Location location) {
+    public void setLocation(LocationDto location) {
         this.location = location;
     }
 

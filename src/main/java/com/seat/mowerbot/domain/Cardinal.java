@@ -1,8 +1,5 @@
 package com.seat.mowerbot.domain;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
-
 public enum Cardinal {
 
     NORTH("N"),
@@ -16,7 +13,6 @@ public enum Cardinal {
         this.shortLetter = shortLetter;
     }
 
-    @JsonValue
     public String getShortLetter() {
         return shortLetter;
     }
@@ -30,8 +26,4 @@ public enum Cardinal {
         return null;
     }
 
-    @JsonCreator
-    public static Cardinal fromString(String value) {
-        return getValueFromShortLetter(value.toUpperCase());
-    }
 }
