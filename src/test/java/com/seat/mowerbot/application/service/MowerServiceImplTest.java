@@ -6,57 +6,54 @@ import com.seat.mowerbot.domain.MowerCommandType;
 import com.seat.mowerbot.domain.Plateau;
 import com.seat.mowerbot.application.service.command.MowerCommandException;
 import com.seat.mowerbot.application.service.command.MowerCommandFactory;
-import com.seat.mowerbot.infrastructure.rest.request.StringToMowerCommandMapper;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static com.seat.mowerbot.domain.MowerCommandType.LEFT;
+import static com.seat.mowerbot.domain.MowerCommandType.MOVE;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
-/*
-* This test has real objects instead mocks, this could not be ok for more complex scenarios
-* */
+@ExtendWith(MockitoExtension.class)
 class MowerServiceImplTest {
 
+    @Mock
     private MowerCommandFactory mowerCommandFactory;
-    private StringToMowerCommandMapper stringToMowerCommandMapper;
-    private MowerService mowerService;
 
-    @BeforeEach
-    void setUp() {
-        mowerCommandFactory = new MowerCommandFactory();
-        stringToMowerCommandMapper = new StringToMowerCommandMapper();
-        mowerService = new MowerServiceImpl(mowerCommandFactory);
-    }
+    @InjectMocks
+    private MowerServiceImpl mowerService;
 
     @Test
-    void testCaseOne() throws MowerCommandException {
-        Plateau plateau = new Plateau(5,5);
-        Location start = new Location(1,2, Cardinal.NORTH);
-        List <MowerCommandType>commands = stringToMowerCommandMapper.map( "LMLMLMLMM");
+    void testEvaluateCommandsValid() throws MowerCommandException {
+        when(mowerCommandFactory.getCommand(new Location(1, 2, Cardinal.NORTH), LEFT))
+                .thenReturn(() -> new Location(1, 2, Cardinal.WEST));
+        when(mowerCommandFactory.getCommand(new Location(1, 2, Cardinal.WEST), MOVE))
+                .thenReturn(() -> new Location(0, 2, Cardinal.WEST));
+        Plateau plateau = new Plateau(5, 5);
+        Location start = new Location(1, 2, Cardinal.NORTH);
+        List<MowerCommandType> commands = Arrays.asList(LEFT, MOVE);
         Location result = mowerService.evaluateCommands(plateau, start, commands);
-        Location expected = new Location(1, 3, Cardinal.NORTH);
+        Location expected = new Location(0, 2, Cardinal.WEST);
         assertEquals(expected, result);
     }
 
     @Test
-    void testCaseTwo() throws MowerCommandException {
-        Plateau plateau = new Plateau(5,5);
-        Location start = new Location(3,3, Cardinal.EAST);
-        List <MowerCommandType>commands = stringToMowerCommandMapper.map("MMRMMRMRRM");
-        Location result = mowerService.evaluateCommands(plateau, start, commands);
-        Location expected = new Location(5, 1, Cardinal.EAST);
-        assertEquals(expected, result);
-    }
-
-    @Test
-    void testGetThrowsException()  {
-        Plateau plateau = new Plateau(5,5);
+    void testEvaluateCommandsThrowsException() throws MowerCommandException {
         Location start = new Location(3, 0, Cardinal.SOUTH);
+        when(mowerCommandFactory.getCommand(start, LEFT))
+                .thenThrow(new MowerCommandException("Error with location : " + start));
+        Plateau plateau = new Plateau(5, 5);
         assertThrows(MowerCommandException.class, () -> {
-            mowerService.evaluateCommands(plateau, start, Collections.singletonList(MowerCommandType.UNKNOWN));
+            mowerService.evaluateCommands(plateau, start, Collections.singletonList(LEFT));
         });
     }
 

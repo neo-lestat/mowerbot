@@ -3,7 +3,7 @@
 ### Requirements
 For deploy this project you will need
 
-* java 11
+* java 21
 * gradle optional
 
 ### Guides

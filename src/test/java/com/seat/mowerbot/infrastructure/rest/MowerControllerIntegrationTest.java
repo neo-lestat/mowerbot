@@ -10,13 +10,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 
-import java.net.URL;
+import java.net.URI;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,9 +36,9 @@ public class MowerControllerIntegrationTest {
 
     @Test
     public void testPing() throws Exception {
-
+        URI uri = new URI("http://localhost:" + port + "/v1/mower/ping");
         ResponseEntity<String> response = restTemplate.getForEntity(
-                new URL("http://localhost:" + port + "/v1/mower/ping").toString(), String.class);
+                uri.toString(), String.class);
         assertEquals("pong", response.getBody());
 
     }
@@ -48,16 +48,17 @@ public class MowerControllerIntegrationTest {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(buildMowerRequest(), headers);
+        URI uri = new URI("http://localhost:" + port + "/v1/mower/commands");
         String response = restTemplate.postForObject(
-                new URL("http://localhost:" + port + "/v1/mower/commands").toString(),
+                uri.toString(),
                 request,
                 String.class);
         assertEquals("[{\"x\":1,\"y\":3,\"direction\":\"N\"}]", response);
     }
 
-    private String buildMowerRequest(){
-        Plateau plateau = new Plateau(5,5);
-        LocationDto initLocation = new LocationDto(1,2, Cardinal.NORTH.getShortLetter());
+    private String buildMowerRequest() {
+        Plateau plateau = new Plateau(5, 5);
+        LocationDto initLocation = new LocationDto(1, 2, Cardinal.NORTH.getShortLetter());
         String movements = "LMLMLMLMM";
         MowerData mowerData = new MowerData();
         mowerData.setLocation(initLocation);
