@@ -7,7 +7,7 @@ import com.seat.mowerbot.domain.Plateau;
 
 import java.util.List;
 
-public interface MowerService {
+public interface EvaluateMowerCommandsService {
 
     Location evaluateCommands(Plateau plateau, Location startLocation, List<MowerCommandType> commands) throws MowerCommandException;
 

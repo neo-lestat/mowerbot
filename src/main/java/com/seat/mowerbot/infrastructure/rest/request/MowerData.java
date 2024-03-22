@@ -1,7 +1,6 @@
 package com.seat.mowerbot.infrastructure.rest.request;
 
 import com.seat.mowerbot.infrastructure.rest.LocationDto;
-
 import jakarta.validation.constraints.NotNull;
 
 public class MowerData {

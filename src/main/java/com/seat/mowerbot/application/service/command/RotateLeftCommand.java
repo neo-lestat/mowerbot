@@ -28,8 +28,8 @@ public class RotateLeftCommand implements MowerCommand {
 
     @Override
     public Location execute() {
-        Cardinal newOrientation = leftMovements.get(location.getDirection());
-        return new Location(location.getX(), location.getY(), newOrientation);
+        Cardinal newOrientation = leftMovements.get(location.direction());
+        return new Location(location.x(), location.y(), newOrientation);
     }
 
 }

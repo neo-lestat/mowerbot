@@ -3,9 +3,9 @@ package com.seat.mowerbot.infrastructure.rest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.seat.mowerbot.domain.Cardinal;
-import com.seat.mowerbot.domain.Plateau;
 import com.seat.mowerbot.infrastructure.rest.request.MowerData;
 import com.seat.mowerbot.infrastructure.rest.request.MowerRequest;
+import com.seat.mowerbot.infrastructure.rest.request.PlateauRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,7 +14,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 
 import java.net.URI;
 import java.util.Collections;
@@ -35,15 +34,6 @@ public class MowerControllerIntegrationTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    public void testPing() throws Exception {
-        URI uri = new URI("http://localhost:" + port + "/v1/mower/ping");
-        ResponseEntity<String> response = restTemplate.getForEntity(
-                uri.toString(), String.class);
-        assertEquals("pong", response.getBody());
-
-    }
-
-    @Test
     public void testEvaluateCommands() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -57,14 +47,14 @@ public class MowerControllerIntegrationTest {
     }
 
     private String buildMowerRequest() {
-        Plateau plateau = new Plateau(5, 5);
+        PlateauRequest plateauRequest = new PlateauRequest(5, 5);
         LocationDto initLocation = new LocationDto(1, 2, Cardinal.NORTH.getShortLetter());
         String movements = "LMLMLMLMM";
         MowerData mowerData = new MowerData();
         mowerData.setLocation(initLocation);
         mowerData.setCommands(movements);
         MowerRequest mowerRequest = new MowerRequest();
-        mowerRequest.setPlateau(plateau);
+        mowerRequest.setPlateauRequest(plateauRequest);
         mowerRequest.setMowerDataList(Collections.singletonList(mowerData));
         ObjectMapper mapper = new ObjectMapper();
         try {

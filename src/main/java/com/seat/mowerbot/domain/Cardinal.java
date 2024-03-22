@@ -2,28 +2,19 @@ package com.seat.mowerbot.domain;
 
 public enum Cardinal {
 
-    NORTH("N"),
-    EAST("E"),
-    WEST("W"),
-    SOUTH("S");
+    NORTH('N'),
+    EAST('E'),
+    WEST('W'),
+    SOUTH('S');
 
-    private final String shortLetter;
+    private final char shortLetter;
 
-    Cardinal(String shortLetter){
+    Cardinal(char shortLetter) {
         this.shortLetter = shortLetter;
     }
 
-    public String getShortLetter() {
+    public char getShortLetter() {
         return shortLetter;
-    }
-
-    public static Cardinal getValueFromShortLetter(String shortLetter) {
-        for(Cardinal cardinal : values()){
-            if( cardinal.getShortLetter().equals(shortLetter.toUpperCase())){
-                return cardinal;
-            }
-        }
-        return null;
     }
 
 }

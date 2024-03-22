@@ -17,17 +17,17 @@ public class MoveCommand implements MowerCommand {
     }
 
     private boolean isMoveInAxisX() {
-        return Cardinal.EAST.equals(location.getDirection()) || Cardinal.WEST.equals(location.getDirection());
+        return Cardinal.EAST.equals(location.direction()) || Cardinal.WEST.equals(location.direction());
     }
 
     private Location moveInAxisX() {
-        int step = Cardinal.EAST.equals(location.getDirection()) ? 1 : -1;
-        return new Location(location.getX() + step , location.getY(), location.getDirection());
+        int step = Cardinal.EAST.equals(location.direction()) ? 1 : -1;
+        return new Location(location.x() + step, location.y(), location.direction());
     }
 
     private Location moveInAxisY() {
-        int step = Cardinal.NORTH.equals(location.getDirection()) ? 1 : -1;
-        return new Location(location.getX(), location.getY() + step, location.getDirection());
+        int step = Cardinal.NORTH.equals(location.direction()) ? 1 : -1;
+        return new Location(location.x(), location.y() + step, location.direction());
     }
 
 }

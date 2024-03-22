@@ -1,9 +1,10 @@
 package com.seat.mowerbot.infrastructure.rest;
 
-import com.seat.mowerbot.application.service.MowerService;
+import com.seat.mowerbot.application.service.EvaluateMowerCommandsService;
 import com.seat.mowerbot.domain.MowerCommandType;
 import com.seat.mowerbot.infrastructure.rest.request.MowerData;
-import com.seat.mowerbot.infrastructure.rest.request.StringToMowerCommandMapper;
+import com.seat.mowerbot.infrastructure.rest.request.PlateauMapper;
+import com.seat.mowerbot.infrastructure.rest.request.MowerCommandMapper;
 import com.seat.mowerbot.application.service.command.MowerCommandException;
 import com.seat.mowerbot.domain.Location;
 import com.seat.mowerbot.domain.Plateau;
@@ -21,43 +22,51 @@ import java.util.List;
 @RequestMapping("/v1/mower")
 public class MowerController {
 
-    @Autowired
-    private final StringToMowerCommandMapper stringToMowerCommandMapper;
+    private final EvaluateMowerCommandsService evaluateMowerCommandsService;
+
+    private final PlateauMapper plateauMapper;
+
+    private final MowerCommandMapper mowerCommandMapper;
+
+    private final LocationDtoMapper locationDtoMapper;
 
     @Autowired
-    private final MowerService mowerService;
-
-    @Autowired
-    private final LocationMapper locationMapper;
-
-    public MowerController(MowerService mowerService, StringToMowerCommandMapper stringToMowerCommandMapper,
-                           LocationMapper locationMapper) {
-        this.mowerService = mowerService;
-        this.stringToMowerCommandMapper = stringToMowerCommandMapper;
-        this.locationMapper = locationMapper;
-    }
-
-    @GetMapping("/ping")
-    public String ping(){
-        return "pong";
+    public MowerController(EvaluateMowerCommandsService evaluateMowerCommandsService, PlateauMapper plateauMapper,
+                           MowerCommandMapper mowerCommandMapper, LocationDtoMapper locationDtoMapper) {
+        this.evaluateMowerCommandsService = evaluateMowerCommandsService;
+        this.plateauMapper = plateauMapper;
+        this.mowerCommandMapper = mowerCommandMapper;
+        this.locationDtoMapper = locationDtoMapper;
     }
 
     @PostMapping("/commands")
     public List<LocationDto> evaluateCommands(@Valid @RequestBody MowerRequest mowerRequest) {
-        Plateau plateau = mowerRequest.getPlateau();
+        Plateau plateau = plateauMapper.map(mowerRequest.getPlateauRequest());
         List<Location> locations = new ArrayList<>();
         try {
             for (MowerData mowerData : mowerRequest.getMowerDataList()) {
-                List<MowerCommandType> commands = stringToMowerCommandMapper.map(mowerData.getCommands());
-                Location location = mowerService.evaluateCommands(plateau,
-                        locationMapper.dtoToDomain(mowerData.getLocation()), commands);
+                List<MowerCommandType> commands = mowerCommandMapper.map(mowerData.getCommands());
+                Location location = evaluateMowerCommandsService.evaluateCommands(plateau,
+                        locationDtoMapper.dtoToDomain(mowerData.getLocation()), commands);
                 locations.add(location);
             }
         } catch (MowerCommandException exc) {
             throw new ResponseStatusException(
                     HttpStatus.INTERNAL_SERVER_ERROR, exc.getMessage(), exc);
         }
-        return locationMapper.domainToDto(locations);
+        /*todo check how if MowerCommandException could be runtime
+        locations = mowerRequest.getMowerDataList().stream()
+                .map(mowerData -> {
+                            try {
+                                List<MowerCommandType> commands = stringToMowerCommandMapper.map(mowerData.getCommands());
+                                return evaluateMowerCommandsService.evaluateCommands(plateau,
+                                        locationMapper.dtoToDomain(mowerData.getLocation()), commands);
+                            } catch (MowerCommandException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                ).collect(Collectors.toList());*/
+        return locationDtoMapper.domainToDto(locations);
     }
 
 }

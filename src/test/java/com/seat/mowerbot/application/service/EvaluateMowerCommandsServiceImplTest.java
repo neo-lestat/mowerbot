@@ -24,13 +24,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class MowerServiceImplTest {
+class EvaluateMowerCommandsServiceImplTest {
 
     @Mock
     private MowerCommandFactory mowerCommandFactory;
 
     @InjectMocks
-    private MowerServiceImpl mowerService;
+    private EvaluateMowerCommandsServiceImpl mowerService;
 
     @Test
     void testEvaluateCommandsValid() throws MowerCommandException {

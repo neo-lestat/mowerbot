@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class MowerServiceImpl implements MowerService {
+public class EvaluateMowerCommandsServiceImpl implements EvaluateMowerCommandsService {
 
     @Autowired
     private final MowerCommandFactory mowerCommandFactory;
 
-    public MowerServiceImpl(MowerCommandFactory mowerCommandFactory) {
+    public EvaluateMowerCommandsServiceImpl(MowerCommandFactory mowerCommandFactory) {
         this.mowerCommandFactory = mowerCommandFactory;
     }
 

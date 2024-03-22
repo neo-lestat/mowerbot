@@ -14,8 +14,8 @@ public class LocationValidation {
     }
 
     public boolean isValid() {
-        return isInsideRange(location.getX(), plateau.getWidth())
-                && isInsideRange(location.getY(), plateau.getHeight());
+        return isInsideRange(location.x(), plateau.width())
+                && isInsideRange(location.y(), plateau.height());
     }
 
     public boolean isNotValid() {

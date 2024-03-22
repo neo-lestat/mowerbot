@@ -1,25 +1,25 @@
 package com.seat.mowerbot.infrastructure.rest.request;
 
-import com.seat.mowerbot.domain.Plateau;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public class MowerRequest {
 
+    @JsonProperty("plateau")
     @NotNull
-    private Plateau plateau;
+    private PlateauRequest plateauRequest;
     @NotNull
     @Valid
     private List<MowerData> mowerDataList;
 
-    public Plateau getPlateau() {
-        return plateau;
+    public PlateauRequest getPlateauRequest() {
+        return plateauRequest;
     }
 
-    public void setPlateau(Plateau plateau) {
-        this.plateau = plateau;
+    public void setPlateauRequest(PlateauRequest plateauRequest) {
+        this.plateauRequest = plateauRequest;
     }
 
     public List<MowerData> getMowerDataList() {
