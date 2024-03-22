@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MowerCommandFactory {
 
-    public MowerCommand getCommand(Location location, MowerCommandType mowerCommandType) throws MowerCommandException {
+    public MowerCommand getCommand(Location location, MowerCommandType mowerCommandType) {
         MowerCommand command;
         switch (mowerCommandType) {
             case MOVE:
@@ -19,7 +19,6 @@ public class MowerCommandFactory {
             case RIGHT:
                 command = new RotateRightCommand(location);
                 break;
-            case UNKNOWN:
             default:
                 throw new MowerCommandException("Wrong command type");
         }

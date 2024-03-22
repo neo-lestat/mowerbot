@@ -1,6 +1,5 @@
 package com.seat.mowerbot.application.service.command;
 
-import com.seat.mowerbot.application.service.command.*;
 import com.seat.mowerbot.domain.Cardinal;
 import com.seat.mowerbot.domain.Location;
 import com.seat.mowerbot.domain.MowerCommandType;
@@ -21,32 +20,24 @@ class MowerCommandFactoryTest {
     }
 
     @Test
-    void testGetMoveCommand() throws MowerCommandException {
+    void testGetMoveCommand() {
         MowerCommand command = mowerCommandFactory.getCommand(location, MowerCommandType.MOVE);
         assertNotNull(command);
-        assertTrue(command instanceof MoveCommand);
+        assertInstanceOf(MoveCommand.class, command);
     }
 
     @Test
-    void testGetRotateLeftCommand() throws MowerCommandException {
+    void testGetRotateLeftCommand() {
         MowerCommand command = mowerCommandFactory.getCommand(location, MowerCommandType.LEFT);
         assertNotNull(command);
-        assertTrue(command instanceof RotateLeftCommand);
+        assertInstanceOf(RotateLeftCommand.class, command);
     }
 
     @Test
-    void testGetRotateRightCommand() throws MowerCommandException {
+    void testGetRotateRightCommand() {
         MowerCommand command = mowerCommandFactory.getCommand(location, MowerCommandType.RIGHT);
         assertNotNull(command);
-        assertTrue(command instanceof RotateRightCommand);
-    }
-
-    @Test
-    void testGetThrowsException()  {
-        location = new Location(3, 0, Cardinal.SOUTH);
-        assertThrows(MowerCommandException.class, () -> {
-            mowerCommandFactory.getCommand(location, MowerCommandType.UNKNOWN);
-        });
+        assertInstanceOf(RotateRightCommand.class, command);
     }
 
 }

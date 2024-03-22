@@ -20,13 +20,15 @@ public class EvaluateMowerCommandsServiceImpl implements EvaluateMowerCommandsSe
         this.mowerCommandFactory = mowerCommandFactory;
     }
 
-    public Location evaluateCommands(Plateau plateau, Location startLocation, List<MowerCommandType> commands) throws MowerCommandException {
+    public Location evaluateCommands(Plateau plateau, Location startLocation, List<MowerCommandType> commands) {
         Location location = startLocation;
         for (MowerCommandType mowerCommandType : commands) {
             location = mowerCommandFactory.getCommand(location, mowerCommandType).execute();
             LocationValidation locationValidation = new LocationValidation(plateau, location);
             if (locationValidation.isNotValid()) {
-                throw new MowerCommandException("Error with location : "  + location.toString());
+                String message = String.format("Error invalid %s, for mower data with initial %s",
+                        location, startLocation);
+                throw new MowerCommandException(message);
             }
         }
         return location;

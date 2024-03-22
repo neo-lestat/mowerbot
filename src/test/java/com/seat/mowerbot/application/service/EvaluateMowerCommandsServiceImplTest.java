@@ -1,10 +1,10 @@
 package com.seat.mowerbot.application.service;
 
+import com.seat.mowerbot.application.service.command.MowerCommandException;
 import com.seat.mowerbot.domain.Cardinal;
 import com.seat.mowerbot.domain.Location;
 import com.seat.mowerbot.domain.MowerCommandType;
 import com.seat.mowerbot.domain.Plateau;
-import com.seat.mowerbot.application.service.command.MowerCommandException;
 import com.seat.mowerbot.application.service.command.MowerCommandFactory;
 
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ class EvaluateMowerCommandsServiceImplTest {
     private EvaluateMowerCommandsServiceImpl mowerService;
 
     @Test
-    void testEvaluateCommandsValid() throws MowerCommandException {
+    void testEvaluateCommandsValid() {
         when(mowerCommandFactory.getCommand(new Location(1, 2, Cardinal.NORTH), LEFT))
                 .thenReturn(() -> new Location(1, 2, Cardinal.WEST));
         when(mowerCommandFactory.getCommand(new Location(1, 2, Cardinal.WEST), MOVE))
@@ -47,7 +47,7 @@ class EvaluateMowerCommandsServiceImplTest {
     }
 
     @Test
-    void testEvaluateCommandsThrowsException() throws MowerCommandException {
+    void testEvaluateCommandsThrowsException() {
         Location start = new Location(3, 0, Cardinal.SOUTH);
         when(mowerCommandFactory.getCommand(start, LEFT))
                 .thenThrow(new MowerCommandException("Error with location : " + start));

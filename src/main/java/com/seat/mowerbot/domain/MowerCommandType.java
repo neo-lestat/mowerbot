@@ -3,8 +3,7 @@ package com.seat.mowerbot.domain;
 public enum MowerCommandType {
     MOVE('M'),
     RIGHT('R'),
-    LEFT('L'),
-    UNKNOWN('X');
+    LEFT('L');
 
     private final char shortLetter;
 

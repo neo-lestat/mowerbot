@@ -16,7 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,7 +43,7 @@ public class MowerControllerTest {
     private MowerController mowerController;
 
     @Test
-    void evaluateCommands() throws MowerCommandException {
+    void evaluateCommands() {
         PlateauRequest plateauRequest = new PlateauRequest(5, 5);
         LocationDto initLocationDto = new LocationDto(1, 2, Cardinal.NORTH.getShortLetter());
         Location initLocation = new Location(1, 2, Cardinal.NORTH);
@@ -56,8 +55,7 @@ public class MowerControllerTest {
         Plateau plateau = new Plateau(5, 5);
         when(plateauMapper.map(plateauRequest)).thenReturn(plateau);
         when(mowerCommandMapper.map(movements)).thenReturn(commands);
-        when(locationDtoMapper.domainToDto(Collections.singletonList(finalLocation)))
-                .thenReturn(Collections.singletonList(finalLocationDto));
+        when(locationDtoMapper.domainToDto(finalLocation)).thenReturn(finalLocationDto);
         when(locationDtoMapper.dtoToDomain(initLocationDto)).thenReturn(initLocation);
         when(evaluateMowerCommandsService.evaluateCommands(plateau, initLocation, commands))
                 .thenReturn(finalLocation);
@@ -90,7 +88,7 @@ public class MowerControllerTest {
         when(locationDtoMapper.dtoToDomain(initLocationDto)).thenReturn(initLocation);
         when(evaluateMowerCommandsService.evaluateCommands(plateau, initLocation, commands))
                 .thenThrow(new MowerCommandException("test"));
-        assertThrows(ResponseStatusException.class, () -> {
+        assertThrows(MowerCommandException.class, () -> {
             mowerController.evaluateCommands(mowerRequest);
         });
     }
