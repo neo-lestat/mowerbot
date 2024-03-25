@@ -53,3 +53,5 @@ curl --request POST \
 You should have an answer like 
 
 `[{"x":1,"y":3,"direction":"N"},{"x":5,"y":1,"direction":"E"}]`
+
+Also, there is **[swagger ui](http://localhost:8080/swagger-ui/index.html)** available

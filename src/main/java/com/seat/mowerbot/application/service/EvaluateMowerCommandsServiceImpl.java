@@ -21,15 +21,21 @@ public class EvaluateMowerCommandsServiceImpl implements EvaluateMowerCommandsSe
     }
 
     public Location evaluateCommands(Plateau plateau, Location startLocation, List<MowerCommandType> commands) {
-        Location location = startLocation;
-        for (MowerCommandType mowerCommandType : commands) {
-            location = mowerCommandFactory.getCommand(location, mowerCommandType).execute();
-            LocationValidation locationValidation = new LocationValidation(plateau, location);
-            if (locationValidation.isNotValid()) {
-                String message = String.format("Error invalid %s, for mower data with initial %s",
-                        location, startLocation);
-                throw new MowerCommandException(message);
-            }
+        Location location = new Location(startLocation.x(), startLocation.y(), startLocation.direction());
+        return commands.stream()
+                .reduce(location,
+                        (locationPartial, commandType) -> evaluateCommand(plateau, locationPartial, commandType, startLocation),
+                        (a, b) -> b);
+    }
+
+    private Location evaluateCommand(Plateau plateau, Location locationOrigin,
+                                     MowerCommandType mowerCommandType, Location startLocation) {
+        Location location = mowerCommandFactory.getCommand(locationOrigin, mowerCommandType).execute();
+        LocationValidation locationValidation = new LocationValidation(plateau, location);
+        if (locationValidation.isNotValid()) {
+            String message = String.format("Error invalid %s, for mower data with initial %s",
+                    location, startLocation);
+            throw new MowerCommandException(message);
         }
         return location;
     }
