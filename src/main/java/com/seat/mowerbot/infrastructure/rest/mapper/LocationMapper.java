@@ -1,18 +1,19 @@
-package com.seat.mowerbot.infrastructure.rest;
+package com.seat.mowerbot.infrastructure.rest.mapper;
 
 import com.seat.mowerbot.application.service.command.MowerCommandException;
-import com.seat.mowerbot.domain.Cardinal;
-import com.seat.mowerbot.domain.Location;
+import com.seat.mowerbot.domain.model.Cardinal;
+import com.seat.mowerbot.domain.model.Location;
+import com.seat.mowerbot.infrastructure.rest.dto.LocationDto;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
 @Component
-public class LocationDtoMapper {
+public class LocationMapper {
 
     public Location dtoToDomain(LocationDto source) {
         return new Location(source.x(), source.y(),
-                getValueFromShortLetter(source.direction()));
+                getCardinal(source.direction()));
     }
 
     public LocationDto domainToDto(Location source) {
@@ -20,7 +21,7 @@ public class LocationDtoMapper {
                 source.direction().getShortLetter());
     }
 
-    public Cardinal getValueFromShortLetter(char shortLetter) {
+    public Cardinal getCardinal(char shortLetter) {
         return Arrays.stream(Cardinal.values())
                 .filter(cardinal -> cardinal.getShortLetter() == Character.toUpperCase(shortLetter))
                 .findAny().orElseThrow(() -> new MowerCommandException("invalid cardinal: " + shortLetter));

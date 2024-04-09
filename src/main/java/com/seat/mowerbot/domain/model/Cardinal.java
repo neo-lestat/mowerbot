@@ -1,4 +1,4 @@
-package com.seat.mowerbot.domain;
+package com.seat.mowerbot.domain.model;
 
 public enum Cardinal {
 

@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class GlobalExceptionHandlerTest {
 
     @Test
-    void handleMowerCommandException() {
+    void testHandleMowerCommandException() {
         GlobalExceptionHandler globalExceptionHandler = new GlobalExceptionHandler();
         ResponseEntity<ErrorResponse> responseEntity = globalExceptionHandler.handleMowerCommandException(new MowerCommandException("test"));
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "test");

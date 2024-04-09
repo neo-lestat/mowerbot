@@ -2,10 +2,11 @@ package com.seat.mowerbot.infrastructure.rest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.seat.mowerbot.domain.Cardinal;
-import com.seat.mowerbot.infrastructure.rest.request.MowerData;
-import com.seat.mowerbot.infrastructure.rest.request.MowerRequest;
-import com.seat.mowerbot.infrastructure.rest.request.PlateauRequest;
+import com.seat.mowerbot.domain.model.Cardinal;
+import com.seat.mowerbot.infrastructure.rest.dto.LocationDto;
+import com.seat.mowerbot.infrastructure.rest.dto.MowerDto;
+import com.seat.mowerbot.infrastructure.rest.dto.MowersDto;
+import com.seat.mowerbot.infrastructure.rest.dto.PlateauDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,7 +36,7 @@ public class MowerControllerIntegrationTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    public void testEvaluateCommands() throws Exception {
+    public void testEvaluateCommands() throws JsonProcessingException, URISyntaxException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> request = new HttpEntity<>(buildMowerRequest(), headers);
@@ -46,23 +48,18 @@ public class MowerControllerIntegrationTest {
         assertEquals("[{\"x\":1,\"y\":3,\"direction\":\"N\"}]", response);
     }
 
-    private String buildMowerRequest() {
-        PlateauRequest plateauRequest = new PlateauRequest(5, 5);
+    private String buildMowerRequest() throws JsonProcessingException {
+        PlateauDto plateauDto = new PlateauDto(5, 5);
         LocationDto initLocation = new LocationDto(1, 2, Cardinal.NORTH.getShortLetter());
         String movements = "LMLMLMLMM";
-        MowerData mowerData = new MowerData();
-        mowerData.setLocation(initLocation);
-        mowerData.setCommands(movements);
-        MowerRequest mowerRequest = new MowerRequest();
-        mowerRequest.setPlateauRequest(plateauRequest);
-        mowerRequest.setMowerDataList(Collections.singletonList(mowerData));
+        MowerDto mowerDto = new MowerDto();
+        mowerDto.setLocation(initLocation);
+        mowerDto.setCommands(movements);
+        MowersDto mowersDto = new MowersDto();
+        mowersDto.setPlateauRequest(plateauDto);
+        mowersDto.setMowers(Collections.singletonList(mowerDto));
         ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.writeValueAsString(mowerRequest);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return "";
+        return mapper.writeValueAsString(mowersDto);
     }
 
 }

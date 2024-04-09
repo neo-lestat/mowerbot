@@ -1,11 +1,13 @@
 package com.seat.mowerbot.infrastructure.rest;
 
 import com.seat.mowerbot.application.service.EvaluateMowerCommandsService;
-import com.seat.mowerbot.domain.MowerCommandType;
-import com.seat.mowerbot.infrastructure.rest.request.PlateauMapper;
-import com.seat.mowerbot.infrastructure.rest.request.MowerCommandMapper;
-import com.seat.mowerbot.domain.Plateau;
-import com.seat.mowerbot.infrastructure.rest.request.MowerRequest;
+import com.seat.mowerbot.domain.model.MowerCommandType;
+import com.seat.mowerbot.infrastructure.rest.dto.LocationDto;
+import com.seat.mowerbot.infrastructure.rest.mapper.LocationMapper;
+import com.seat.mowerbot.infrastructure.rest.mapper.PlateauMapper;
+import com.seat.mowerbot.infrastructure.rest.mapper.MowerCommandMapper;
+import com.seat.mowerbot.domain.model.Plateau;
+import com.seat.mowerbot.infrastructure.rest.dto.MowersDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,28 +26,28 @@ public class MowerController {
 
     private final MowerCommandMapper mowerCommandMapper;
 
-    private final LocationDtoMapper locationDtoMapper;
+    private final LocationMapper locationMapper;
 
     @Autowired
     public MowerController(EvaluateMowerCommandsService evaluateMowerCommandsService, PlateauMapper plateauMapper,
-                           MowerCommandMapper mowerCommandMapper, LocationDtoMapper locationDtoMapper) {
+                           MowerCommandMapper mowerCommandMapper, LocationMapper locationMapper) {
         this.evaluateMowerCommandsService = evaluateMowerCommandsService;
         this.plateauMapper = plateauMapper;
         this.mowerCommandMapper = mowerCommandMapper;
-        this.locationDtoMapper = locationDtoMapper;
+        this.locationMapper = locationMapper;
     }
 
     @PostMapping("/commands")
-    public List<LocationDto> evaluateCommands(@Valid @RequestBody MowerRequest mowerRequest) {
-        Plateau plateau = plateauMapper.map(mowerRequest.getPlateauRequest());
-        return mowerRequest.getMowerDataList().stream()
-                .map(mowerData -> {
-                    List<MowerCommandType> commands = mowerCommandMapper.map(mowerData.getCommands());
+    public List<LocationDto> evaluateCommands(@Valid @RequestBody MowersDto mowersDto) {
+        Plateau plateau = plateauMapper.map(mowersDto.getPlateauRequest());
+        return mowersDto.getMowers().stream()
+                .map(mower -> {
+                    List<MowerCommandType> commands = mowerCommandMapper.map(mower.getCommands());
                     return evaluateMowerCommandsService.evaluateCommands(plateau,
-                            locationDtoMapper.dtoToDomain(mowerData.getLocation()), commands);
+                            locationMapper.dtoToDomain(mower.getLocation()), commands);
 
                 })
-                .map(locationDtoMapper::domainToDto)
+                .map(locationMapper::domainToDto)
                 .collect(Collectors.toList());
     }
 

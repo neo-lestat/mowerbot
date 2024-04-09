@@ -28,7 +28,7 @@ curl --request POST \
 		"width": 5, 
 		"height": 5
 	},
-	"mowerDataList" : [
+	"mowers" : [
 		{
 			"location": {
 				"x": 1,

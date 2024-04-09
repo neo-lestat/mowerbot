@@ -1,7 +1,7 @@
 package com.seat.mowerbot.application.service.command;
 
-import com.seat.mowerbot.domain.Location;
-import com.seat.mowerbot.domain.MowerCommandType;
+import com.seat.mowerbot.domain.model.Location;
+import com.seat.mowerbot.domain.model.MowerCommandType;
 import org.springframework.stereotype.Component;
 
 @Component

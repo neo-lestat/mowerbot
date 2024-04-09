@@ -1,10 +1,10 @@
 package com.seat.mowerbot.application.service;
 
 import com.seat.mowerbot.application.service.command.MowerCommandException;
-import com.seat.mowerbot.domain.Cardinal;
-import com.seat.mowerbot.domain.Location;
-import com.seat.mowerbot.domain.MowerCommandType;
-import com.seat.mowerbot.domain.Plateau;
+import com.seat.mowerbot.domain.model.Cardinal;
+import com.seat.mowerbot.domain.model.Location;
+import com.seat.mowerbot.domain.model.MowerCommandType;
+import com.seat.mowerbot.domain.model.Plateau;
 import com.seat.mowerbot.application.service.command.MowerCommandFactory;
 
 import org.junit.jupiter.api.Test;
@@ -17,8 +17,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static com.seat.mowerbot.domain.MowerCommandType.LEFT;
-import static com.seat.mowerbot.domain.MowerCommandType.MOVE;
+import static com.seat.mowerbot.domain.model.MowerCommandType.LEFT;
+import static com.seat.mowerbot.domain.model.MowerCommandType.MOVE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;

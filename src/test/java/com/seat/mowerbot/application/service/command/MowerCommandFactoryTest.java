@@ -1,8 +1,8 @@
 package com.seat.mowerbot.application.service.command;
 
-import com.seat.mowerbot.domain.Cardinal;
-import com.seat.mowerbot.domain.Location;
-import com.seat.mowerbot.domain.MowerCommandType;
+import com.seat.mowerbot.domain.model.Cardinal;
+import com.seat.mowerbot.domain.model.Location;
+import com.seat.mowerbot.domain.model.MowerCommandType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

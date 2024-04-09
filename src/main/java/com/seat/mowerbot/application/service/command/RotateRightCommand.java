@@ -1,12 +1,12 @@
 package com.seat.mowerbot.application.service.command;
 
-import com.seat.mowerbot.domain.Cardinal;
-import com.seat.mowerbot.domain.Location;
+import com.seat.mowerbot.domain.model.Cardinal;
+import com.seat.mowerbot.domain.model.Location;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.seat.mowerbot.domain.Cardinal.*;
+import static com.seat.mowerbot.domain.model.Cardinal.*;
 
 public class RotateRightCommand implements MowerCommand {
 

@@ -1,9 +1,8 @@
-package com.seat.mowerbot.infrastructure.rest.request;
+package com.seat.mowerbot.infrastructure.rest.dto;
 
-import com.seat.mowerbot.infrastructure.rest.LocationDto;
 import jakarta.validation.constraints.NotNull;
 
-public class MowerData {
+public class MowerDto {
 
     @NotNull
     private LocationDto location;

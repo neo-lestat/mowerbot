@@ -1,8 +1,8 @@
 package com.seat.mowerbot.application.service;
 
-import com.seat.mowerbot.domain.MowerCommandType;
-import com.seat.mowerbot.domain.Location;
-import com.seat.mowerbot.domain.Plateau;
+import com.seat.mowerbot.domain.model.MowerCommandType;
+import com.seat.mowerbot.domain.model.Location;
+import com.seat.mowerbot.domain.model.Plateau;
 
 import java.util.List;
 

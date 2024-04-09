@@ -1,9 +1,8 @@
 package com.seat.mowerbot.application.service;
 
-import com.seat.mowerbot.domain.Cardinal;
-import com.seat.mowerbot.domain.Location;
-import com.seat.mowerbot.domain.Plateau;
-import com.seat.mowerbot.application.service.LocationValidation;
+import com.seat.mowerbot.domain.model.Cardinal;
+import com.seat.mowerbot.domain.model.Location;
+import com.seat.mowerbot.domain.model.Plateau;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
