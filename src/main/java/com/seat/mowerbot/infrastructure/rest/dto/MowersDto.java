@@ -14,7 +14,7 @@ public class MowersDto {
     @Valid
     private List<MowerDto> mowers;
 
-    public PlateauDto getPlateauRequest() {
+    public PlateauDto getPlateauDto() {
         return plateauDto;
     }
 

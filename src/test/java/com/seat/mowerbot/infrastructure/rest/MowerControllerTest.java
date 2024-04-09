@@ -3,6 +3,7 @@ package com.seat.mowerbot.infrastructure.rest;
 import com.seat.mowerbot.application.service.EvaluateMowerCommandsService;
 import com.seat.mowerbot.domain.model.Cardinal;
 import com.seat.mowerbot.domain.model.Location;
+import com.seat.mowerbot.domain.model.Mower;
 import com.seat.mowerbot.domain.model.MowerCommandType;
 import com.seat.mowerbot.domain.model.Plateau;
 import com.seat.mowerbot.infrastructure.rest.dto.LocationDto;
@@ -11,8 +12,7 @@ import com.seat.mowerbot.infrastructure.rest.dto.MowerDto;
 import com.seat.mowerbot.infrastructure.rest.dto.MowersDto;
 import com.seat.mowerbot.application.service.command.MowerCommandException;
 import com.seat.mowerbot.infrastructure.rest.dto.PlateauDto;
-import com.seat.mowerbot.infrastructure.rest.mapper.PlateauMapper;
-import com.seat.mowerbot.infrastructure.rest.mapper.MowerCommandMapper;
+import com.seat.mowerbot.infrastructure.rest.mapper.MowerMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,10 +30,7 @@ import static org.mockito.Mockito.when;
 public class MowerControllerTest {
 
     @Mock
-    private PlateauMapper plateauMapper;
-
-    @Mock
-    private MowerCommandMapper mowerCommandMapper;
+    private MowerMapper mowerMapper;
 
     @Mock
     private LocationMapper locationMapper;
@@ -46,29 +43,33 @@ public class MowerControllerTest {
 
     @Test
     void testEvaluateCommands() {
-        PlateauDto plateauDto = new PlateauDto(5, 5);
-        LocationDto initLocationDto = new LocationDto(1, 2, Cardinal.NORTH.getShortLetter());
-        Location initLocation = new Location(1, 2, Cardinal.NORTH);
-        String movements = "LM";
-        MowersDto mowersDto = buildMowerRequest(plateauDto, initLocationDto, movements);
+        MowersDto mowersDto = buildMowerDto();
+        Mower mower = buildMower();
         Location finalLocation = new Location(0, 2, Cardinal.WEST);
         LocationDto finalLocationDto = new LocationDto(0, 2, Cardinal.WEST.getShortLetter());
-        List<MowerCommandType> commands = Arrays.asList(MowerCommandType.LEFT, MowerCommandType.MOVE);
-        Plateau plateau = new Plateau(5, 5);
-        when(plateauMapper.map(plateauDto)).thenReturn(plateau);
-        when(mowerCommandMapper.map(movements)).thenReturn(commands);
-        when(locationMapper.domainToDto(finalLocation)).thenReturn(finalLocationDto);
-        when(locationMapper.dtoToDomain(initLocationDto)).thenReturn(initLocation);
-        when(evaluateMowerCommandsService.evaluateCommands(plateau, initLocation, commands))
+        when(mowerMapper.mapToDomain(mowersDto.getPlateauDto(), mowersDto.getMowers().getFirst()))
+                .thenReturn(mower);
+        when(evaluateMowerCommandsService.evaluateCommands(mower))
                 .thenReturn(finalLocation);
+        when(locationMapper.domainToDto(finalLocation)).thenReturn(finalLocationDto);
         List<LocationDto> results = mowerController.evaluateCommands(mowersDto);
         assertEquals(1, results.size());
-        assertEquals(finalLocationDto, results.get(0));
+        assertEquals(finalLocationDto, results.getFirst());
     }
 
-    private MowersDto buildMowerRequest(PlateauDto plateauDto, LocationDto initLocation, String movements) {
+    private Mower buildMower() {
+        Location initLocation = new Location(1, 2, Cardinal.NORTH);
+        List<MowerCommandType> commands = Arrays.asList(MowerCommandType.LEFT, MowerCommandType.MOVE);
+        Plateau plateau = new Plateau(5, 5);
+        return new Mower(plateau, initLocation, commands);
+    }
+
+    private MowersDto buildMowerDto() {
+        PlateauDto plateauDto = new PlateauDto(5, 5);
+        LocationDto initLocationDto = new LocationDto(1, 2, Cardinal.NORTH.getShortLetter());
+        String movements = "LM";
         MowerDto mowerDto = new MowerDto();
-        mowerDto.setLocation(initLocation);
+        mowerDto.setLocation(initLocationDto);
         mowerDto.setCommands(movements);
         MowersDto mowersDto = new MowersDto();
         mowersDto.setPlateauRequest(plateauDto);
@@ -78,17 +79,11 @@ public class MowerControllerTest {
 
     @Test
     void testEvaluateCommandsThrowsException() throws MowerCommandException {
-        PlateauDto plateauDto = new PlateauDto(5, 5);
-        LocationDto initLocationDto = new LocationDto(1, 2, Cardinal.NORTH.getShortLetter());
-        Location initLocation = new Location(1, 2, Cardinal.NORTH);
-        String movements = "LM";
-        MowersDto mowersDto = buildMowerRequest(plateauDto, initLocationDto, movements);
-        List<MowerCommandType> commands = Arrays.asList(MowerCommandType.LEFT, MowerCommandType.MOVE);
-        Plateau plateau = new Plateau(5, 5);
-        when(plateauMapper.map(plateauDto)).thenReturn(plateau);
-        when(mowerCommandMapper.map(movements)).thenReturn(commands);
-        when(locationMapper.dtoToDomain(initLocationDto)).thenReturn(initLocation);
-        when(evaluateMowerCommandsService.evaluateCommands(plateau, initLocation, commands))
+        MowersDto mowersDto = buildMowerDto();
+        Mower mower = buildMower();
+        when(mowerMapper.mapToDomain(mowersDto.getPlateauDto(), mowersDto.getMowers().getFirst()))
+                .thenReturn(mower);
+        when(evaluateMowerCommandsService.evaluateCommands(mower))
                 .thenThrow(new MowerCommandException("test"));
         assertThrows(MowerCommandException.class, () -> {
             mowerController.evaluateCommands(mowersDto);

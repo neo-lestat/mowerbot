@@ -1,17 +1,21 @@
 package com.seat.mowerbot.infrastructure.rest;
 
 import com.seat.mowerbot.application.service.EvaluateMowerCommandsService;
-import com.seat.mowerbot.domain.model.MowerCommandType;
+import com.seat.mowerbot.domain.model.Location;
+import com.seat.mowerbot.domain.model.Mower;
 import com.seat.mowerbot.infrastructure.rest.dto.LocationDto;
+import com.seat.mowerbot.infrastructure.rest.dto.MowerDto;
+import com.seat.mowerbot.infrastructure.rest.dto.PlateauDto;
 import com.seat.mowerbot.infrastructure.rest.mapper.LocationMapper;
-import com.seat.mowerbot.infrastructure.rest.mapper.PlateauMapper;
-import com.seat.mowerbot.infrastructure.rest.mapper.MowerCommandMapper;
-import com.seat.mowerbot.domain.model.Plateau;
+import com.seat.mowerbot.infrastructure.rest.mapper.MowerMapper;
 import com.seat.mowerbot.infrastructure.rest.dto.MowersDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,33 +26,30 @@ public class MowerController {
 
     private final EvaluateMowerCommandsService evaluateMowerCommandsService;
 
-    private final PlateauMapper plateauMapper;
-
-    private final MowerCommandMapper mowerCommandMapper;
+    private final MowerMapper mowerMapper;
 
     private final LocationMapper locationMapper;
 
     @Autowired
-    public MowerController(EvaluateMowerCommandsService evaluateMowerCommandsService, PlateauMapper plateauMapper,
-                           MowerCommandMapper mowerCommandMapper, LocationMapper locationMapper) {
+    public MowerController(EvaluateMowerCommandsService evaluateMowerCommandsService,
+                           MowerMapper mowerMapper, LocationMapper locationMapper) {
         this.evaluateMowerCommandsService = evaluateMowerCommandsService;
-        this.plateauMapper = plateauMapper;
-        this.mowerCommandMapper = mowerCommandMapper;
+        this.mowerMapper = mowerMapper;
         this.locationMapper = locationMapper;
     }
 
     @PostMapping("/commands")
     public List<LocationDto> evaluateCommands(@Valid @RequestBody MowersDto mowersDto) {
-        Plateau plateau = plateauMapper.map(mowersDto.getPlateauRequest());
+        PlateauDto plateauDto = mowersDto.getPlateauDto();
         return mowersDto.getMowers().stream()
-                .map(mower -> {
-                    List<MowerCommandType> commands = mowerCommandMapper.map(mower.getCommands());
-                    return evaluateMowerCommandsService.evaluateCommands(plateau,
-                            locationMapper.dtoToDomain(mower.getLocation()), commands);
-
-                })
+                .map(mowerDto -> evaluateCommands(plateauDto, mowerDto))
                 .map(locationMapper::domainToDto)
                 .collect(Collectors.toList());
+    }
+
+    private Location evaluateCommands(PlateauDto plateauDto, MowerDto mowerDto) {
+        Mower mower = mowerMapper.mapToDomain(plateauDto, mowerDto);
+        return evaluateMowerCommandsService.evaluateCommands(mower);
     }
 
 }
