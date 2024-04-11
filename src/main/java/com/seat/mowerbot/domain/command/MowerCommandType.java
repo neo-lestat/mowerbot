@@ -1,4 +1,4 @@
-package com.seat.mowerbot.domain.model;
+package com.seat.mowerbot.domain.command;
 
 public enum MowerCommandType {
     MOVE('M'),

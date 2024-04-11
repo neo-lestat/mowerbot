@@ -36,10 +36,10 @@ public class MowerControllerIntegrationTest {
     private TestRestTemplate restTemplate;
 
     @Test
-    public void testEvaluateCommands() throws JsonProcessingException, URISyntaxException {
+    public void testCommandsOk() throws JsonProcessingException, URISyntaxException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> request = new HttpEntity<>(buildMowerRequest(), headers);
+        HttpEntity<String> request = new HttpEntity<>(buildMowerRequest("LMLMLMLMM"), headers);
         URI uri = new URI("http://localhost:" + port + "/v1/mower/commands");
         String response = restTemplate.postForObject(
                 uri.toString(),
@@ -48,13 +48,38 @@ public class MowerControllerIntegrationTest {
         assertEquals("[{\"x\":1,\"y\":3,\"direction\":\"N\"}]", response);
     }
 
-    private String buildMowerRequest() throws JsonProcessingException {
+    @Test
+    public void testCommandsWithInvalidCommand() throws JsonProcessingException, URISyntaxException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<>(buildMowerRequest("j"), headers);
+        URI uri = new URI("http://localhost:" + port + "/v1/mower/commands");
+        String response = restTemplate.postForObject(
+                uri.toString(),
+                request,
+                String.class);
+        assertEquals("{\"statusCode\":400,\"message\":\"Wrong command type: J\"}", response);
+    }
+
+    @Test
+    public void testCommandsLeadingToWrongLocation() throws JsonProcessingException, URISyntaxException {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<>(buildMowerRequest("j"), headers);
+        URI uri = new URI("http://localhost:" + port + "/v1/mower/commands");
+        String response = restTemplate.postForObject(
+                uri.toString(),
+                request,
+                String.class);
+        assertEquals("{\"statusCode\":400,\"message\":\"Wrong command type: J\"}", response);
+    }
+
+    private String buildMowerRequest(String commands) throws JsonProcessingException {
         PlateauDto plateauDto = new PlateauDto(5, 5);
         LocationDto initLocation = new LocationDto(1, 2, Cardinal.NORTH.getShortLetter());
-        String movements = "LMLMLMLMM";
         MowerDto mowerDto = new MowerDto();
         mowerDto.setLocation(initLocation);
-        mowerDto.setCommands(movements);
+        mowerDto.setCommands(commands);
         MowersDto mowersDto = new MowersDto();
         mowersDto.setPlateauRequest(plateauDto);
         mowersDto.setMowers(Collections.singletonList(mowerDto));

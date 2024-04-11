@@ -1,7 +1,8 @@
-package com.seat.mowerbot.application.service.command;
+package com.seat.mowerbot.domain.command;
 
 import com.seat.mowerbot.domain.model.Cardinal;
 import com.seat.mowerbot.domain.model.Location;
+import com.seat.mowerbot.domain.model.Mower;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,7 +11,7 @@ import static com.seat.mowerbot.domain.model.Cardinal.*;
 
 public class RotateLeftCommand implements MowerCommand {
 
-    private final Location location;
+    private final Mower mower;
 
     private static final Map<Cardinal, Cardinal> leftMovements;
 
@@ -22,14 +23,14 @@ public class RotateLeftCommand implements MowerCommand {
         leftMovements.put(SOUTH, EAST);
     }
 
-    public RotateLeftCommand(Location location) {
-        this.location = location;
+    public RotateLeftCommand(Mower mower) {
+        this.mower = mower;
     }
 
     @Override
-    public Location execute() {
-        Cardinal newOrientation = leftMovements.get(location.direction());
-        return new Location(location.x(), location.y(), newOrientation);
+    public Mower execute() {
+        Cardinal newOrientation = leftMovements.get(mower.location().direction());
+        return new Mower(mower.plateau(), new Location(mower.location().x(), mower.location().y(), newOrientation));
     }
 
 }

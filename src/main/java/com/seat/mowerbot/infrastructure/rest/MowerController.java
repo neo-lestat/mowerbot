@@ -1,12 +1,14 @@
 package com.seat.mowerbot.infrastructure.rest;
 
-import com.seat.mowerbot.application.service.EvaluateMowerCommandsService;
+import com.seat.mowerbot.application.service.MowerCommandsExecutor;
 import com.seat.mowerbot.domain.model.Location;
 import com.seat.mowerbot.domain.model.Mower;
+import com.seat.mowerbot.domain.command.MowerCommandType;
 import com.seat.mowerbot.infrastructure.rest.dto.LocationDto;
 import com.seat.mowerbot.infrastructure.rest.dto.MowerDto;
 import com.seat.mowerbot.infrastructure.rest.dto.PlateauDto;
 import com.seat.mowerbot.infrastructure.rest.mapper.LocationMapper;
+import com.seat.mowerbot.infrastructure.rest.mapper.MowerCommandTypeMapper;
 import com.seat.mowerbot.infrastructure.rest.mapper.MowerMapper;
 import com.seat.mowerbot.infrastructure.rest.dto.MowersDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,18 +26,22 @@ import java.util.stream.Collectors;
 @RequestMapping("/v1/mower")
 public class MowerController {
 
-    private final EvaluateMowerCommandsService evaluateMowerCommandsService;
-
     private final MowerMapper mowerMapper;
 
     private final LocationMapper locationMapper;
 
+    private final MowerCommandTypeMapper mowerCommandTypeMapper;
+
+    private final MowerCommandsExecutor mowerCommandsExecutor;
+
     @Autowired
-    public MowerController(EvaluateMowerCommandsService evaluateMowerCommandsService,
-                           MowerMapper mowerMapper, LocationMapper locationMapper) {
-        this.evaluateMowerCommandsService = evaluateMowerCommandsService;
+    public MowerController(MowerMapper mowerMapper, LocationMapper locationMapper,
+                           MowerCommandTypeMapper mowerCommandTypeMapper,
+                           MowerCommandsExecutor mowerCommandsExecutor) {
         this.mowerMapper = mowerMapper;
         this.locationMapper = locationMapper;
+        this.mowerCommandTypeMapper = mowerCommandTypeMapper;
+        this.mowerCommandsExecutor = mowerCommandsExecutor;
     }
 
     @PostMapping("/commands")
@@ -49,7 +55,9 @@ public class MowerController {
 
     private Location evaluateCommands(PlateauDto plateauDto, MowerDto mowerDto) {
         Mower mower = mowerMapper.mapToDomain(plateauDto, mowerDto);
-        return evaluateMowerCommandsService.evaluateCommands(mower);
+        List<MowerCommandType> mowerCommands = mowerCommandTypeMapper.map(mowerDto.getCommands());
+        mower = mowerCommandsExecutor.executeCommands(mower, mowerCommands);
+        return mower.location();
     }
 
 }

@@ -1,4 +1,4 @@
-package com.seat.mowerbot.application.service.command;
+package com.seat.mowerbot.domain.command;
 
 public class MowerCommandException extends RuntimeException {
 

@@ -1,23 +1,22 @@
-package com.seat.mowerbot.application.service.command;
+package com.seat.mowerbot.domain.command;
 
-import com.seat.mowerbot.domain.model.Location;
-import com.seat.mowerbot.domain.model.MowerCommandType;
+import com.seat.mowerbot.domain.model.Mower;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MowerCommandFactory {
 
-    public MowerCommand getCommand(Location location, MowerCommandType mowerCommandType) {
+    public MowerCommand getCommand(Mower mower, MowerCommandType mowerCommandType) {
         MowerCommand command;
         switch (mowerCommandType) {
             case MOVE:
-                command = new MoveCommand(location);
+                command = new MoveCommand(mower);
                 break;
             case LEFT:
-                command = new RotateLeftCommand(location);
+                command = new RotateLeftCommand(mower);
                 break;
             case RIGHT:
-                command = new RotateRightCommand(location);
+                command = new RotateRightCommand(mower);
                 break;
             default:
                 throw new MowerCommandException("Wrong command type");

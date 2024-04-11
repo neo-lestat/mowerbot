@@ -1,4 +1,4 @@
-package com.seat.mowerbot.application.service;
+package com.seat.mowerbot.domain.command;
 
 import com.seat.mowerbot.domain.model.Location;
 import com.seat.mowerbot.domain.model.Plateau;

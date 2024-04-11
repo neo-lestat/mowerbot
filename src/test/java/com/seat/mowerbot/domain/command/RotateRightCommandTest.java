@@ -1,7 +1,8 @@
-package com.seat.mowerbot.application.service.command;
+package com.seat.mowerbot.domain.command;
 
 import com.seat.mowerbot.domain.model.Cardinal;
 import com.seat.mowerbot.domain.model.Location;
+import com.seat.mowerbot.domain.model.Mower;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,10 +14,11 @@ class RotateRightCommandTest {
     @Test
     void testExecute() {
         location = new Location(3, 3, Cardinal.EAST);
-        RotateRightCommand rotateRightCommand = new RotateRightCommand(location);
-        Location actual = rotateRightCommand.execute();
+        Mower mower = new Mower(null, location);
+        RotateRightCommand rotateRightCommand = new RotateRightCommand(mower);
+        mower =  rotateRightCommand.execute();
         Location expected = new Location(3, 3, Cardinal.SOUTH);
-        assertEquals(expected, actual);
+        assertEquals(expected, mower.location());
     }
 
 }

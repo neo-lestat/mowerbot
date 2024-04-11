@@ -1,4 +1,4 @@
-package com.seat.mowerbot.application.service;
+package com.seat.mowerbot.domain.command;
 
 import com.seat.mowerbot.domain.model.Cardinal;
 import com.seat.mowerbot.domain.model.Location;
@@ -11,7 +11,7 @@ class LocationValidationTest {
 
     @Test
     void testIsValidLocation() {
-        Plateau plateau = new Plateau(5,5);
+        Plateau plateau = new Plateau(5, 5);
         Location location = new Location(3,3, Cardinal.EAST);
         LocationValidation plateauBusiness = new LocationValidation(plateau, location);
         boolean isValid = plateauBusiness.isValid();

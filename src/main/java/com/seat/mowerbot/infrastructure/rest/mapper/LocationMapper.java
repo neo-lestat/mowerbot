@@ -1,6 +1,6 @@
 package com.seat.mowerbot.infrastructure.rest.mapper;
 
-import com.seat.mowerbot.application.service.command.MowerCommandException;
+import com.seat.mowerbot.domain.command.MowerCommandException;
 import com.seat.mowerbot.domain.model.Cardinal;
 import com.seat.mowerbot.domain.model.Location;
 import com.seat.mowerbot.infrastructure.rest.dto.LocationDto;

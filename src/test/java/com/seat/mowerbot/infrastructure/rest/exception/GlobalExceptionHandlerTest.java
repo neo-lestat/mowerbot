@@ -1,6 +1,6 @@
 package com.seat.mowerbot.infrastructure.rest.exception;
 
-import com.seat.mowerbot.application.service.command.MowerCommandException;
+import com.seat.mowerbot.domain.command.MowerCommandException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

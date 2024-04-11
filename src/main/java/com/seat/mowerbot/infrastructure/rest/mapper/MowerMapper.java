@@ -11,21 +11,17 @@ public class MowerMapper {
 
     private final PlateauMapper plateauMapper;
     private final LocationMapper locationMapper;
-    private final MowerCommandMapper mowerCommandMapper;
 
     @Autowired
     public MowerMapper(PlateauMapper plateauMapper,
-                       LocationMapper locationMapper,
-                       MowerCommandMapper mowerCommandMapper) {
+                       LocationMapper locationMapper) {
         this.plateauMapper = plateauMapper;
         this.locationMapper = locationMapper;
-        this.mowerCommandMapper = mowerCommandMapper;
     }
 
     public Mower mapToDomain(PlateauDto plateauDto, MowerDto mowerDto) {
         return new Mower(plateauMapper.map(plateauDto),
-                locationMapper.dtoToDomain(mowerDto.getLocation()),
-                mowerCommandMapper.map(mowerDto.getCommands()));
+                locationMapper.dtoToDomain(mowerDto.getLocation()));
 
     }
 }
