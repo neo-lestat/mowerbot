@@ -32,17 +32,17 @@ curl --request POST \
 		{
 			"location": {
 				"x": 1,
-				"y": 2,
-				"direction": "N"
+				"y": 2
 			},
+			"direction": "N",
 			"commands": "LMLMLMLMM"
 		},
 		{
 			"location": {
 				"x": 3,
-				"y": 3,
-				"direction": "E"
+				"y": 3
 			},
+			"direction": "E",
 			"commands": "MMRMMRMRRM"
 		}
 	]

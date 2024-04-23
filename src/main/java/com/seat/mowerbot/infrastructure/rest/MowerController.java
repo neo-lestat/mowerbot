@@ -1,22 +1,24 @@
 package com.seat.mowerbot.infrastructure.rest;
 
-import com.seat.mowerbot.application.service.MowerCommandsExecutor;
-import com.seat.mowerbot.domain.model.Location;
+import com.seat.mowerbot.domain.ApplyMowerCommandsUseCase;
 import com.seat.mowerbot.domain.model.Mower;
 import com.seat.mowerbot.domain.command.MowerCommandType;
-import com.seat.mowerbot.infrastructure.rest.dto.LocationDto;
 import com.seat.mowerbot.infrastructure.rest.dto.MowerDto;
+import com.seat.mowerbot.infrastructure.rest.dto.MowerResponseDto;
 import com.seat.mowerbot.infrastructure.rest.dto.PlateauDto;
 import com.seat.mowerbot.infrastructure.rest.mapper.LocationMapper;
 import com.seat.mowerbot.infrastructure.rest.mapper.MowerCommandTypeMapper;
 import com.seat.mowerbot.infrastructure.rest.mapper.MowerMapper;
 import com.seat.mowerbot.infrastructure.rest.dto.MowersDto;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -28,36 +30,35 @@ public class MowerController {
 
     private final MowerMapper mowerMapper;
 
-    private final LocationMapper locationMapper;
-
     private final MowerCommandTypeMapper mowerCommandTypeMapper;
 
-    private final MowerCommandsExecutor mowerCommandsExecutor;
+    private final ApplyMowerCommandsUseCase applyMowerCommandsUseCase;
 
     @Autowired
-    public MowerController(MowerMapper mowerMapper, LocationMapper locationMapper,
+    public MowerController(MowerMapper mowerMapper,
                            MowerCommandTypeMapper mowerCommandTypeMapper,
-                           MowerCommandsExecutor mowerCommandsExecutor) {
+                           ApplyMowerCommandsUseCase applyMowerCommandsUseCase) {
         this.mowerMapper = mowerMapper;
-        this.locationMapper = locationMapper;
         this.mowerCommandTypeMapper = mowerCommandTypeMapper;
-        this.mowerCommandsExecutor = mowerCommandsExecutor;
+        this.applyMowerCommandsUseCase = applyMowerCommandsUseCase;
     }
 
+    @Operation(summary = "Evaluate mower commands")
     @PostMapping("/commands")
-    public List<LocationDto> evaluateCommands(@Valid @RequestBody MowersDto mowersDto) {
+    @ResponseStatus(HttpStatus.OK)
+    public List<MowerResponseDto> evaluateCommands(@Valid @RequestBody MowersDto mowersDto) {
         PlateauDto plateauDto = mowersDto.getPlateauDto();
         return mowersDto.getMowers().stream()
                 .map(mowerDto -> evaluateCommands(plateauDto, mowerDto))
-                .map(locationMapper::domainToDto)
+                .map(mowerMapper::domainToDto)
                 .collect(Collectors.toList());
     }
 
-    private Location evaluateCommands(PlateauDto plateauDto, MowerDto mowerDto) {
-        Mower mower = mowerMapper.mapToDomain(plateauDto, mowerDto);
+    private Mower evaluateCommands(PlateauDto plateauDto, MowerDto mowerDto) {
+        Mower mower = mowerMapper.dtoToDomain(plateauDto, mowerDto);
         List<MowerCommandType> mowerCommands = mowerCommandTypeMapper.map(mowerDto.getCommands());
-        mower = mowerCommandsExecutor.executeCommands(mower, mowerCommands);
-        return mower.location();
+        mower = applyMowerCommandsUseCase.applyCommands(mower, mowerCommands);
+        return mower;
     }
 
 }

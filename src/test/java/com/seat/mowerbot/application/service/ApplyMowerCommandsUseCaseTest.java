@@ -1,5 +1,6 @@
 package com.seat.mowerbot.application.service;
 
+import com.seat.mowerbot.domain.command.MowerCommand;
 import com.seat.mowerbot.domain.command.MowerCommandException;
 import com.seat.mowerbot.domain.command.MowerCommandFactory;
 import com.seat.mowerbot.domain.command.MowerCommandType;
@@ -24,42 +25,46 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class MowerCommandsExecutorTest {
+class ApplyMowerCommandsUseCaseTest {
 
     @Mock
     private MowerCommandFactory mowerCommandFactory;
 
+    @Mock
+    private MowerCommand mowerCommand;
+
     @InjectMocks
-    private MowerCommandsExecutor mowerService;
+    private ApplyMowerCommandsUseCaseImpl applyMowerCommandsUseCase;
 
     @Test
     void testExecuteCommandsValid() {
-        Plateau plateau = new Plateau(5,5);
-        Mower locationInit = new Mower(plateau, new Location(1, 2, Cardinal.NORTH));
-        Mower locationMiddle = new Mower(plateau, new Location(1, 2, Cardinal.WEST));
-        Mower locationFinal = new Mower(plateau, new Location(0, 2, Cardinal.WEST));
-        when(mowerCommandFactory.getCommand(locationInit, LEFT)).thenReturn(() -> locationMiddle);
-        when(mowerCommandFactory.getCommand(locationMiddle, MOVE)).thenReturn(() -> locationFinal);
+        Mower mowerInit = new Mower(new Plateau(5, 5), new Location(1, 2), Cardinal.NORTH);
+        Mower mowerMiddle = new Mower.Builder().from(mowerInit).withDirection(Cardinal.WEST);
+        Mower mowerFinal = new Mower.Builder().from(mowerMiddle).withLocation(new Location(0, 2));
+        when(mowerCommandFactory.getCommand(LEFT)).thenReturn(mowerCommand);
+        when(mowerCommandFactory.getCommand(MOVE)).thenReturn(mowerCommand);
+        when(mowerCommand.execute(mowerInit)).thenReturn(mowerMiddle);
+        when(mowerCommand.execute(mowerMiddle)).thenReturn(mowerFinal);
         Mower mower = buildMower();
         List<MowerCommandType> commandTypeList = Arrays.asList(LEFT, MOVE);
-        Mower result = mowerService.executeCommands(mower, commandTypeList);
-        assertEquals(locationFinal, result);
+        Mower result = applyMowerCommandsUseCase.applyCommands(mower, commandTypeList);
+        assertEquals(mowerFinal, result);
     }
 
     @Test
     void testExecuteCommandsThrowsException() {
         Mower mower = buildMower();
         List<MowerCommandType> commandTypeList = Arrays.asList(LEFT);
-        when(mowerCommandFactory.getCommand(mower, LEFT))
+        when(mowerCommandFactory.getCommand(LEFT))
                 .thenThrow(new MowerCommandException("Error with location : " + mower.location()));
         assertThrows(MowerCommandException.class, () -> {
-            mowerService.executeCommands(mower, commandTypeList);
+            applyMowerCommandsUseCase.applyCommands(mower, commandTypeList);
         });
     }
 
     private Mower buildMower() {
         Plateau plateau = new Plateau(5, 5);
-        Location start = new Location(1, 2, Cardinal.NORTH);
-        return new Mower(plateau, start);
+        Location start = new Location(1, 2);
+        return new Mower(plateau, start, Cardinal.NORTH);
     }
 }

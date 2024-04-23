@@ -6,34 +6,30 @@ import com.seat.mowerbot.domain.model.Mower;
 
 public class MoveCommand implements MowerCommand {
 
-    private final Mower mower;
-
-    public MoveCommand(Mower mower) {
-        this.mower = mower;
-    }
 
     @Override
-    public Mower execute() {
-        Location newLocation = isMoveInAxisX() ? moveInAxisX() : moveInAxisY();
-        validateNewLocation();
-        return new Mower(mower.plateau(), newLocation);
+    public Mower execute(Mower mower) {
+        Location newLocation = isMoveInAxisX(mower) ? moveInAxisX(mower) : moveInAxisY(mower);
+        Mower newMower = new Mower.Builder().from(mower).withLocation(newLocation);
+        validateNewLocation(newMower);
+        return newMower;
     }
 
-    private boolean isMoveInAxisX() {
-        return Cardinal.EAST.equals(mower.location().direction()) || Cardinal.WEST.equals(mower.location().direction());
+    private boolean isMoveInAxisX(Mower mower) {
+        return Cardinal.EAST.equals(mower.direction()) || Cardinal.WEST.equals(mower.direction());
     }
 
-    private Location moveInAxisX() {
-        int step = Cardinal.EAST.equals(mower.location().direction()) ? 1 : -1;
-        return new Location(mower.location().x() + step, mower.location().y(), mower.location().direction());
+    private Location moveInAxisX(Mower mower) {
+        int step = Cardinal.EAST.equals(mower.direction()) ? 1 : -1;
+        return new Location(mower.location().x() + step, mower.location().y());
     }
 
-    private Location moveInAxisY() {
-        int step = Cardinal.NORTH.equals(mower.location().direction()) ? 1 : -1;
-        return new Location(mower.location().x(), mower.location().y() + step, mower.location().direction());
+    private Location moveInAxisY(Mower mower) {
+        int step = Cardinal.NORTH.equals(mower.direction()) ? 1 : -1;
+        return new Location(mower.location().x(), mower.location().y() + step);
     }
 
-    private void validateNewLocation() {
+    private void validateNewLocation(Mower mower) {
         LocationValidation locationValidation = new LocationValidation(mower.plateau(), mower.location());
         if (locationValidation.isNotValid()) {
             String message = String.format("Error invalid %s", mower.location());

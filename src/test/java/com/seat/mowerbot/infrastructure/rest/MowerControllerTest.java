@@ -1,16 +1,20 @@
 package com.seat.mowerbot.infrastructure.rest;
 
+import com.seat.mowerbot.domain.ApplyMowerCommandsUseCase;
+import com.seat.mowerbot.domain.command.MowerCommandType;
 import com.seat.mowerbot.domain.model.Cardinal;
 import com.seat.mowerbot.domain.model.Location;
 import com.seat.mowerbot.domain.model.Mower;
 import com.seat.mowerbot.domain.model.Plateau;
 import com.seat.mowerbot.infrastructure.rest.dto.LocationDto;
-import com.seat.mowerbot.infrastructure.rest.mapper.LocationMapper;
+import com.seat.mowerbot.infrastructure.rest.dto.MowerResponseDto;
 import com.seat.mowerbot.infrastructure.rest.dto.MowerDto;
 import com.seat.mowerbot.infrastructure.rest.dto.MowersDto;
 import com.seat.mowerbot.domain.command.MowerCommandException;
 import com.seat.mowerbot.infrastructure.rest.dto.PlateauDto;
+import com.seat.mowerbot.infrastructure.rest.mapper.MowerCommandTypeMapper;
 import com.seat.mowerbot.infrastructure.rest.mapper.MowerMapper;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -29,39 +33,46 @@ public class MowerControllerTest {
     private MowerMapper mowerMapper;
 
     @Mock
-    private LocationMapper locationMapper;
+    private MowerCommandTypeMapper mowerCommandTypeMapper;
 
-    //@Mock
-   // private EvaluateMowerCommandsService evaluateMowerCommandsService;
+    @Mock
+    private ApplyMowerCommandsUseCase applyMowerCommandsUseCase;
 
     @InjectMocks
     private MowerController mowerController;
 
-    //@Test
+    @Test
     void testEvaluateCommands() {
-        MowersDto mowersDto = buildMowerDto();
-        Mower mower = buildMower();
-        Location finalLocation = new Location(0, 2, Cardinal.WEST);
-        LocationDto finalLocationDto = new LocationDto(0, 2, Cardinal.WEST.getShortLetter());
-        when(mowerMapper.mapToDomain(mowersDto.getPlateauDto(), mowersDto.getMowers().getFirst()))
+        MowersDto mowersDto = aMowerDto();
+        Mower mower = aMower();
+        List<MowerCommandType> mowerCommandTypeList = Collections.singletonList(MowerCommandType.MOVE);
+        when(mowerCommandTypeMapper.map(mowersDto.getMowers().getFirst().getCommands()))
+                .thenReturn(mowerCommandTypeList);
+        when(mowerMapper.dtoToDomain(mowersDto.getPlateauDto(), mowersDto.getMowers().getFirst()))
                 .thenReturn(mower);
-       // when(evaluateMowerCommandsService.evaluateCommands())
-        //        .thenReturn(finalLocation);
-        when(locationMapper.domainToDto(finalLocation)).thenReturn(finalLocationDto);
-        List<LocationDto> results = mowerController.evaluateCommands(mowersDto);
+        Mower mowerAppliedCommands = new Mower.Builder().from(mower).withLocation(new Location(0, 1));
+        when(applyMowerCommandsUseCase.applyCommands(mower, mowerCommandTypeList))
+                .thenReturn(mowerAppliedCommands);
+        MowerResponseDto mowerResponseDto = aMowerResponseDto();
+        when(mowerMapper.domainToDto(mowerAppliedCommands)).thenReturn(mowerResponseDto);
+        List<MowerResponseDto> results = mowerController.evaluateCommands(mowersDto);
         assertEquals(1, results.size());
-        assertEquals(finalLocationDto, results.getFirst());
+        assertEquals(mowerResponseDto, results.getFirst());
     }
 
-    private Mower buildMower() {
-        Location initLocation = new Location(1, 2, Cardinal.NORTH);
-        Plateau plateau = new Plateau(5, 5);
-        return new Mower(plateau, initLocation);
+    private Mower aMower() {
+        return new Mower(new Plateau(5, 5),
+                new Location(0, 0),
+                Cardinal.NORTH);
     }
 
-    private MowersDto buildMowerDto() {
+    private MowerResponseDto aMowerResponseDto() {
+        return new MowerResponseDto(new LocationDto(0, 1), "N");
+    }
+
+    private MowersDto aMowerDto() {
         PlateauDto plateauDto = new PlateauDto(5, 5);
-        LocationDto initLocationDto = new LocationDto(1, 2, Cardinal.NORTH.getShortLetter());
+        LocationDto initLocationDto = new LocationDto(1, 2);
         String movements = "LM";
         MowerDto mowerDto = new MowerDto();
         mowerDto.setLocation(initLocationDto);
@@ -72,16 +83,4 @@ public class MowerControllerTest {
         return mowersDto;
     }
 
-    //@Test
-    void testEvaluateCommandsThrowsException() throws MowerCommandException {
-        MowersDto mowersDto = buildMowerDto();
-        Mower mower = buildMower();
-        when(mowerMapper.mapToDomain(mowersDto.getPlateauDto(), mowersDto.getMowers().getFirst()))
-                .thenReturn(mower);
-       // when(evaluateMowerCommandsService.evaluateCommands(mower))
-        //        .thenThrow(new MowerCommandException("test"));
-        //assertThrows(MowerCommandException.class, () -> {
-        //    mowerController.evaluateCommands(mowersDto);
-        //});
-    }
 }

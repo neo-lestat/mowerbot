@@ -45,7 +45,7 @@ public class MowerControllerIntegrationTest {
                 uri.toString(),
                 request,
                 String.class);
-        assertEquals("[{\"x\":1,\"y\":3,\"direction\":\"N\"}]", response);
+        assertEquals("[{\"location\":{\"x\":1,\"y\":3},\"direction\":\"N\"}]", response);
     }
 
     @Test
@@ -76,13 +76,14 @@ public class MowerControllerIntegrationTest {
 
     private String buildMowerRequest(String commands) throws JsonProcessingException {
         PlateauDto plateauDto = new PlateauDto(5, 5);
-        LocationDto initLocation = new LocationDto(1, 2, Cardinal.NORTH.getShortLetter());
+        LocationDto initLocation = new LocationDto(1, 2);
         MowerDto mowerDto = new MowerDto();
         mowerDto.setLocation(initLocation);
         mowerDto.setCommands(commands);
         MowersDto mowersDto = new MowersDto();
         mowersDto.setPlateauRequest(plateauDto);
         mowersDto.setMowers(Collections.singletonList(mowerDto));
+        mowerDto.setDirection(String.valueOf(Cardinal.NORTH.getShortLetter()));
         ObjectMapper mapper = new ObjectMapper();
         return mapper.writeValueAsString(mowersDto);
     }

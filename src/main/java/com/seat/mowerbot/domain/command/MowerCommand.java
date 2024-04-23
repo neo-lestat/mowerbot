@@ -5,6 +5,6 @@ import com.seat.mowerbot.domain.model.Mower;
 
 public interface MowerCommand {
 
-    Mower execute();
+    Mower execute(Mower mower);
 
 }

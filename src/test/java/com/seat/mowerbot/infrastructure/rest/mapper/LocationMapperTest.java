@@ -1,6 +1,5 @@
 package com.seat.mowerbot.infrastructure.rest.mapper;
 
-import com.seat.mowerbot.domain.model.Cardinal;
 import com.seat.mowerbot.domain.model.Location;
 import com.seat.mowerbot.infrastructure.rest.dto.LocationDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,16 +18,16 @@ class LocationMapperTest {
 
     @Test
     void testDtoToDomain() {
-        Location location = new Location(0, 2, Cardinal.WEST);
-        LocationDto locationDto = new LocationDto(0, 2, Cardinal.WEST.getShortLetter());
+        Location location = new Location(0, 2);
+        LocationDto locationDto = new LocationDto(0, 2);
         Location locationResult = locationMapper.dtoToDomain(locationDto);
         assertEquals(location, locationResult);
     }
 
     @Test
     void testDomainToDto() {
-        Location location = new Location(0, 2, Cardinal.WEST);
-        LocationDto locationDto = new LocationDto(0, 2, Cardinal.WEST.getShortLetter());
+        Location location = new Location(0, 2);
+        LocationDto locationDto = new LocationDto(0, 2);
         LocationDto locationDtoResult = locationMapper.domainToDto(location);
         assertEquals(locationDto, locationDtoResult);
     }

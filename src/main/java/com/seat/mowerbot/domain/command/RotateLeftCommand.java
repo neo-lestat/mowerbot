@@ -11,8 +11,6 @@ import static com.seat.mowerbot.domain.model.Cardinal.*;
 
 public class RotateLeftCommand implements MowerCommand {
 
-    private final Mower mower;
-
     private static final Map<Cardinal, Cardinal> leftMovements;
 
     static {
@@ -23,14 +21,10 @@ public class RotateLeftCommand implements MowerCommand {
         leftMovements.put(SOUTH, EAST);
     }
 
-    public RotateLeftCommand(Mower mower) {
-        this.mower = mower;
-    }
-
     @Override
-    public Mower execute() {
-        Cardinal newOrientation = leftMovements.get(mower.location().direction());
-        return new Mower(mower.plateau(), new Location(mower.location().x(), mower.location().y(), newOrientation));
+    public Mower execute(Mower mower) {
+        Cardinal newOrientation = leftMovements.get(mower.direction());
+        return new Mower.Builder().from(mower).withDirection(newOrientation);
     }
 
 }

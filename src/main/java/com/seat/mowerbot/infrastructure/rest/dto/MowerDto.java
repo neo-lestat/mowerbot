@@ -7,6 +7,8 @@ public class MowerDto {
     @NotNull
     private LocationDto location;
     @NotNull
+    private String direction;
+    @NotNull
     private String commands;
 
     public LocationDto getLocation() {
@@ -15,6 +17,14 @@ public class MowerDto {
 
     public void setLocation(LocationDto location) {
         this.location = location;
+    }
+
+    public String getDirection() {
+        return direction;
+    }
+
+    public void setDirection(String direction) {
+        this.direction = direction;
     }
 
     public String getCommands() {
