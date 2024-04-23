@@ -1,4 +1,4 @@
-package com.seat.mowerbot.application.service;
+package com.seat.mowerbot.application.usecase;
 
 import com.seat.mowerbot.domain.command.MowerCommand;
 import com.seat.mowerbot.domain.command.MowerCommandException;

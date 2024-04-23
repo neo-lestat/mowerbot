@@ -1,12 +1,11 @@
 package com.seat.mowerbot.infrastructure.rest;
 
-import com.seat.mowerbot.domain.ApplyMowerCommandsUseCase;
+import com.seat.mowerbot.application.service.MowerCommandsEvaluatorService;
 import com.seat.mowerbot.domain.model.Mower;
 import com.seat.mowerbot.domain.command.MowerCommandType;
 import com.seat.mowerbot.infrastructure.rest.dto.MowerDto;
 import com.seat.mowerbot.infrastructure.rest.dto.MowerResponseDto;
 import com.seat.mowerbot.infrastructure.rest.dto.PlateauDto;
-import com.seat.mowerbot.infrastructure.rest.mapper.LocationMapper;
 import com.seat.mowerbot.infrastructure.rest.mapper.MowerCommandTypeMapper;
 import com.seat.mowerbot.infrastructure.rest.mapper.MowerMapper;
 import com.seat.mowerbot.infrastructure.rest.dto.MowersDto;
@@ -32,15 +31,15 @@ public class MowerController {
 
     private final MowerCommandTypeMapper mowerCommandTypeMapper;
 
-    private final ApplyMowerCommandsUseCase applyMowerCommandsUseCase;
+    private final MowerCommandsEvaluatorService mowerCommandsEvaluatorService;
 
     @Autowired
     public MowerController(MowerMapper mowerMapper,
                            MowerCommandTypeMapper mowerCommandTypeMapper,
-                           ApplyMowerCommandsUseCase applyMowerCommandsUseCase) {
+                           MowerCommandsEvaluatorService mowerCommandsEvaluatorService) {
         this.mowerMapper = mowerMapper;
         this.mowerCommandTypeMapper = mowerCommandTypeMapper;
-        this.applyMowerCommandsUseCase = applyMowerCommandsUseCase;
+        this.mowerCommandsEvaluatorService = mowerCommandsEvaluatorService;
     }
 
     @Operation(summary = "Evaluate mower commands")
@@ -57,7 +56,7 @@ public class MowerController {
     private Mower evaluateCommands(PlateauDto plateauDto, MowerDto mowerDto) {
         Mower mower = mowerMapper.dtoToDomain(plateauDto, mowerDto);
         List<MowerCommandType> mowerCommands = mowerCommandTypeMapper.map(mowerDto.getCommands());
-        mower = applyMowerCommandsUseCase.applyCommands(mower, mowerCommands);
+        mower = mowerCommandsEvaluatorService.evaluateCommands(mower, mowerCommands);
         return mower;
     }
 

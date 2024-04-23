@@ -1,5 +1,6 @@
 package com.seat.mowerbot.infrastructure.rest;
 
+import com.seat.mowerbot.application.service.MowerCommandsEvaluatorService;
 import com.seat.mowerbot.domain.ApplyMowerCommandsUseCase;
 import com.seat.mowerbot.domain.command.MowerCommandType;
 import com.seat.mowerbot.domain.model.Cardinal;
@@ -36,7 +37,7 @@ public class MowerControllerTest {
     private MowerCommandTypeMapper mowerCommandTypeMapper;
 
     @Mock
-    private ApplyMowerCommandsUseCase applyMowerCommandsUseCase;
+    private MowerCommandsEvaluatorService mowerCommandsEvaluatorService;
 
     @InjectMocks
     private MowerController mowerController;
@@ -51,7 +52,7 @@ public class MowerControllerTest {
         when(mowerMapper.dtoToDomain(mowersDto.getPlateauDto(), mowersDto.getMowers().getFirst()))
                 .thenReturn(mower);
         Mower mowerAppliedCommands = new Mower.Builder().from(mower).withLocation(new Location(0, 1));
-        when(applyMowerCommandsUseCase.applyCommands(mower, mowerCommandTypeList))
+        when(mowerCommandsEvaluatorService.evaluateCommands(mower, mowerCommandTypeList))
                 .thenReturn(mowerAppliedCommands);
         MowerResponseDto mowerResponseDto = aMowerResponseDto();
         when(mowerMapper.domainToDto(mowerAppliedCommands)).thenReturn(mowerResponseDto);
